@@ -1,0 +1,6 @@
+# All data files are not to be uploaded to github, use this to ignore code files.
+__pycache__
+*.dat
+*.log
+.pio
+.vscode

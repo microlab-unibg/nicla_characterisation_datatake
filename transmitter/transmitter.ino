@@ -1,8 +1,7 @@
 #include "Nicla_System.h"
+#include "Arduino.h"
 #include "Arduino_BHY2.h"
 #include <ArduinoBLE.h>
-
-SensorBSEC2Collector bsec2Collector(SENSOR_ID_BSEC2_COLLECTOR);
 
 #define CONFIG_BSEC2_USE_DEAULT_HP 1
 
@@ -31,9 +30,9 @@ BLEFloatCharacteristic temperatureCharacteristic(BLE_SENSE_UUID("2001"), BLERead
 BLEFloatCharacteristic humidityCharacteristic(BLE_SENSE_UUID("3001"), BLERead | BLENotify);
 BLEFloatCharacteristic pressureCharacteristic(BLE_SENSE_UUID("4001"), BLERead | BLENotify);
 
-BLEUnsignedIntCharacteristic accelerometerCharacteristic(BLE_SENSE_UUID("5001"), BLERead | BLENotify, 3 * sizeof(float));  // Array of 3x 2 Bytes, XY
-BLEUnsignedIntCharacteristic gyroscopeCharacteristic(BLE_SENSE_UUID("6001"), BLERead | BLENotify, 3 * sizeof(float));      // Array of 3x 2 Bytes, XYZ
-BLEUnsignedIntCharacteristic quaternionCharacteristic(BLE_SENSE_UUID("7001"), BLERead | BLENotify, 4 * sizeof(float));     // Array of 4x 2 Bytes, XYZW
+BLECharacteristic accelerometerCharacteristic(BLE_SENSE_UUID("5001"), BLERead | BLENotify, 3 * sizeof(unsigned int));  // Array of 3x 2 Bytes, XY
+BLECharacteristic gyroscopeCharacteristic(BLE_SENSE_UUID("6001"), BLERead | BLENotify, 3 * sizeof(unsigned int));      // Array of 3x 2 Bytes, XYZ
+BLECharacteristic quaternionCharacteristic(BLE_SENSE_UUID("7001"), BLERead | BLENotify, 4 * sizeof(unsigned int));     // Array of 4x 2 Bytes, XYZW
 
 BLECharacteristic rgbLedCharacteristic(BLE_SENSE_UUID("8001"), BLERead | BLEWrite, 3 * sizeof(byte));  // Array of 3 bytes, RGB
 
@@ -83,7 +82,8 @@ void setup() {
 
   //Sensors initialization
   BHY2.begin(NICLA_STANDALONE);
-  sensortec.bhy2_bsec2_setHP((uint8_t*)BSEC2HP_TEMP, sizeof(BSEC2HP_TEMP), (uint8_t*)BSEC2HP_DUR, sizeof(BSEC2HP_DUR)); 
+  // apparently there is no function called bhy2_bsec2_setHP (is it still in the blackbox?!)
+  //sensortec.bhy2_bsec2_setHP((uint8_t*)BSEC2HP_TEMP, sizeof(BSEC2HP_TEMP), (uint8_t*)BSEC2HP_DUR, sizeof(BSEC2HP_DUR)); 
 
   accelerometer.begin(100, 0);
   accelerometer.setRange(8);
@@ -229,7 +229,7 @@ void check_subscriptions() {
   if (comptCharacteristic.subscribed()) {
     compt_notify();              
   }
-  if (cpomphCharacteristic.subscribed()) {
+  if (comphCharacteristic.subscribed()) {
     comph_notify();              
   }
   if (compgCharacteristic.subscribed()) {

@@ -22,9 +22,15 @@ SENSOR_NAME_LIST = [
     "temperature",
     "pressure",
     "gasresistance",
-    "co2",
     "iaq",
-    "accuracy"
+    "iaq_s",
+    "co2_eq",
+    "b_voc_eq",
+    "comp_t",
+    "comp_h",
+    "comp_g",
+    "gas",
+    "accuracy",
 ]
 ID_LIST = [
     "0000", # service ID, not to be read
@@ -32,10 +38,15 @@ ID_LIST = [
     "2001", # temperature
     "4001", # pressure
     "9002", # gasresistance
-    "9001", # co2
-    "9003", # iaq
-    "9004", # accuracy
-    "9005"  # alarm
+    "9001", # iaq
+    "9002", # iaq_s
+    "9003", # co2_eq
+    "9004", # b_voc_eq
+    "9005", # comp_t
+    "9006", # comp_h
+    "9007", # comp_g
+    "9008", # gas
+    "9009", # accuracy
 ]
 
 CHARACTERISTIC_NAMES_TO_UUIDS = {charac_name: ble_sense_uuid(charac_id) for charac_name, charac_id in zip(SENSOR_NAME_LIST,ID_LIST)}
@@ -240,16 +251,6 @@ async def update_sensor_read(sender,data):
         log_root.info(f"Sensor {sensor_name} was already read!")
 
     sensor_read[sensor_name] = data
-    
-
-
-    if (sensor_name == "alarm"):
-        alarm = int(bytes(sensor_read[sensor_name])[0])
-        if (alarm != 0):
-            log_root.warning("An alarm was sent by the remote device! Check immediately!")
-            alarm_type = "Fornello" if alarm == 1 else "Bollitore"
-            log_root.warning(f"Alarm type: {alarm_type}")
-            log_root.warning("Initiating safety procedures...")
 
     if all(sensor_read[x] is not None for x in sensor_read.keys()):
         log_root.info("All sensor read, proceed to log...")
@@ -264,12 +265,17 @@ def log_sensors():
     humidity = struct.unpack("f", sensor_read["humidity"])[0]
     temperature = struct.unpack("f", sensor_read["temperature"])[0]
     pressure = struct.unpack("f", sensor_read["pressure"])[0]
-    co2 = struct.unpack("L", sensor_read["co2"])[0]
     iaq = struct.unpack("I", sensor_read["iaq"])[0]
-    gasresistance = struct.unpack("f", sensor_read["gasresistance"])[0]
+    iaq_s = struct.unpack("I", sensor_read["iaq_s"])[0]
+    co2_eq = struct.unpack("L", sensor_read["co2_eq"])[0]
+    b_voc_eq = struct.unpack("f", sensor_read["co2_eq"])[0]
+    comp_t = struct.unpack("f", sensor_read["co2_eq"])[0]
+    comp_h = struct.unpack("f", sensor_read["co2_eq"])[0]
+    comp_g = struct.unpack("f", sensor_read["co2_eq"])[0]
+    gas = struct.unpack("f", sensor_read["gas"])[0]
     accuracy = struct.unpack("H", sensor_read["accuracy"])[0]
 
-    str_to_write = f"{now},{temperature},{humidity},{pressure},{gasresistance},{co2},{iaq},{accuracy}\n"
+    str_to_write = f"{now},{temperature},{humidity},{pressure},{iaq},{iaq_s},{co2_eq},{b_voc_eq},{comp_t},{comp_h},{comp_g},{gas},{accuracy}\n"
 
     log_root.info(f"Packet received: {str_to_write}")
 

@@ -37,10 +37,15 @@ BLEUnsignedIntCharacteristic quaternionCharacteristic(BLE_SENSE_UUID("7001"), BL
 
 BLECharacteristic rgbLedCharacteristic(BLE_SENSE_UUID("8001"), BLERead | BLEWrite, 3 * sizeof(byte));  // Array of 3 bytes, RGB
 
-BLEUnsignedIntCharacteristic bsecCharacteristic(BLE_SENSE_UUID("9001"), BLERead | BLENotify);
-BLEUnsignedLongCharacteristic co2Characteristic(BLE_SENSE_UUID("9002"), BLERead | BLENotify);
-BLEFloatCharacteristic gasCharacteristic(BLE_SENSE_UUID("9003"), BLERead | BLENotify);
-BLEUnsignedShortCharacteristic accuracyCharacteristic(BLE_SENSE_UUID("9004"), BLERead | BLENotify);
+BLEUnsignedIntCharacteristic iaqCharacteristic(BLE_SENSE_UUID("9001"), BLERead | BLENotify);
+BLEUnsignedIntCharacteristic iaqsCharacteristic(BLE_SENSE_UUID("9002"), BLERead | BLENotify);
+BLEUnsignedLongCharacteristic co2eqCharacteristic(BLE_SENSE_UUID("9003"), BLERead | BLENotify);
+BLEFloatCharacteristic bvoceqCharacteristic(BLE_SENSE_UUID("9004"), BLERead | BLENotify);
+BLEFloatCharacteristic comptCharacteristic(BLE_SENSE_UUID("9005"), BLERead | BLENotify);
+BLEFloatCharacteristic comphCharacteristic(BLE_SENSE_UUID("9006"), BLERead | BLENotify);
+BLEUnsignedLongCharacteristic compgCharacteristic(BLE_SENSE_UUID("9007"), BLERead | BLENotify);
+BLEFloatCharacteristic gasCharacteristic(BLE_SENSE_UUID("9008"), BLERead | BLENotify);
+BLEUnsignedShortCharacteristic accuracyCharacteristic(BLE_SENSE_UUID("9009"), BLERead | BLENotify);
 
 // String for the local and device name
 String name;
@@ -125,8 +130,13 @@ void setup() {
   service.addCharacteristic(accelerometerCharacteristic);
   service.addCharacteristic(gyroscopeCharacteristic);
   service.addCharacteristic(quaternionCharacteristic);
-  service.addCharacteristic(bsecCharacteristic);
-  service.addCharacteristic(co2Characteristic);
+  service.addCharacteristic(iaqCharacteristic);
+  service.addCharacteristic(iaqsCharacteristic);
+  service.addCharacteristic(co2eqCharacteristic);
+  service.addCharacteristic(bvoceqCharacteristic);
+  service.addCharacteristic(comptCharacteristic);
+  service.addCharacteristic(comphCharacteristic);
+  service.addCharacteristic(compgCharacteristic);
   service.addCharacteristic(gasCharacteristic);
   service.addCharacteristic(accuracyCharacteristic);
   service.addCharacteristic(rgbLedCharacteristic);
@@ -204,11 +214,26 @@ void check_subscriptions() {
   if (quaternionCharacteristic.subscribed()) {
     quaternion_notify();              
   }
-  if (bsecCharacteristic.subscribed()) {
-    bsec_notify();              
+  if (iaqCharacteristic.subscribed()) {
+    iaq_notify();              
   }
-  if (co2Characteristic.subscribed()) {
+  if (iaqsCharacteristic.subscribed()) {
+    iaqs_notify();              
+  }
+  if (co2eqCharacteristic.subscribed()) {
     co2_notify();              
+  }
+  if (bvoceqCharacteristic.subscribed()) {
+    bvoceq_notify();              
+  }
+  if (comptCharacteristic.subscribed()) {
+    compt_notify();              
+  }
+  if (cpomphCharacteristic.subscribed()) {
+    comph_notify();              
+  }
+  if (compgCharacteristic.subscribed()) {
+    compg_notify();              
   }
   if (gasCharacteristic.subscribed()) {
     gas_notify();              
@@ -248,14 +273,39 @@ void pressure_notify() {
   pressureCharacteristic.writeValue(pressureValue);
 }
 
-void bsec_notify() {
-  uint16_t airQuality = float(bsec.iaq());
-  bsecCharacteristic.writeValue(airQuality);
+void iaq_notify() {
+  uint16_t iaq = bsec.iaq();
+  iaqCharacteristic.writeValue(iaq);
+}
+
+void iaqs_notify() {
+  uint16_t iaq_s = bsec.iaq_s();
+  iaqsCharacteristic.writeValue(iaq_s);
 }
 
 void co2_notify() {
-  uint32_t co2 = bsec.co2_eq();
-  co2Characteristic.writeValue(co2);
+  uint32_t co2_eq = bsec.co2_eq();
+  co2eqCharacteristic.writeValue(co2_eq);
+}
+
+void bvoceq_notify() {
+  float bvoceq = bsec.b_voc_eq();
+  bvoceqCharacteristic.writeValue(bvoceq);
+}
+
+void compt_notify() {
+  float comp_t = bsec.comp_t();
+  comptCharacteristic.writeValue(comp_t);
+}
+
+void comph_notify() {
+  float comp_h = bsec.comp_h();
+  comphCharacteristic.writeValue(comp_h);
+}
+
+void compg_notify() {
+  float comp_g = float(bsec.comp_g());
+  compgCharacteristic.writeValue(comp_g);
 }
 
 void gas_notify() {

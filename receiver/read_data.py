@@ -18,8 +18,8 @@ TIMEOUT = 10
 
 SENSOR_NAME_LIST = [
     "service ID",
-    "humidity",
     "temperature",
+    "humidity",
     "pressure",
     "iaq",
     "iaq_s",
@@ -33,8 +33,8 @@ SENSOR_NAME_LIST = [
 ]
 ID_LIST = [
     "0000", # service ID, not to be read
-    "3001", # humidity
     "2001", # temperature
+    "3001", # humidity
     "4001", # pressure
     "9001", # iaq
     "9002", # iaq_s

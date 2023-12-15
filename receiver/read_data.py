@@ -266,7 +266,7 @@ def log_sensors():
     iaq = struct.unpack("I", sensor_read["iaq"])[0]
     iaq_s = struct.unpack("I", sensor_read["iaq_s"])[0]
     co2_eq = struct.unpack("L", sensor_read["co2_eq"])[0]
-    b_voc_eq = round(struct.unpack("f", sensor_read["b_voc_eq"])[0],2)
+    b_voc_eq = round(struct.unpack("f", sensor_read["b_voc_eq"])[0],4)
     comp_t = round(struct.unpack("f", sensor_read["comp_t"])[0],2)
     comp_h = round(struct.unpack("f", sensor_read["comp_h"])[0],2)
     comp_g = struct.unpack("L", sensor_read["comp_g"])[0]
@@ -292,7 +292,7 @@ def clear_sensors():
 def main():
     # Header
     with open(filepath_out, "w") as fp:
-        fp.write("datetime," + ",".join(SENSOR_NAME_LIST[1:]) + "\n")
+        fp.write("datetime\t" + "\t".join(SENSOR_NAME_LIST[1:]) + "\n")
 
     while not end_loop:
         loop = asyncio.new_event_loop()

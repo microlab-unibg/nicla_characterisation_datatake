@@ -21,7 +21,6 @@ SENSOR_NAME_LIST = [
     "humidity",
     "temperature",
     "pressure",
-    "gasresistance",
     "iaq",
     "iaq_s",
     "co2_eq",
@@ -37,7 +36,6 @@ ID_LIST = [
     "3001", # humidity
     "2001", # temperature
     "4001", # pressure
-    "9002", # gasresistance
     "9001", # iaq
     "9002", # iaq_s
     "9003", # co2_eq

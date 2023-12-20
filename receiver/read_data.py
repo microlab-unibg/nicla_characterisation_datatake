@@ -12,14 +12,14 @@ from pathlib import Path
 
 # Constants
 KNOWN_ADDRESSES = [
-    "E0:65:95:2D:11:97" # check this address
+    "2E:DA:3A:76:2C:B1" # check this address
 ]
 TIMEOUT = 10
 
 SENSOR_NAME_LIST = [
     "service ID",
-    "humidity",
     "temperature",
+    "humidity",
     "pressure",
     "iaq",
     "iaq_s",
@@ -33,8 +33,8 @@ SENSOR_NAME_LIST = [
 ]
 ID_LIST = [
     "0000", # service ID, not to be read
-    "3001", # humidity
     "2001", # temperature
+    "3001", # humidity
     "4001", # pressure
     "9001", # iaq
     "9002", # iaq_s
@@ -260,20 +260,20 @@ def log_sensors():
     """
     global sensor_read
     now = datetime.now()
-    humidity = struct.unpack("f", sensor_read["humidity"])[0]
-    temperature = struct.unpack("f", sensor_read["temperature"])[0]
-    pressure = struct.unpack("f", sensor_read["pressure"])[0]
+    humidity = round(struct.unpack("f", sensor_read["humidity"])[0],2)
+    temperature = round(struct.unpack("f", sensor_read["temperature"])[0],2)
+    pressure = round(struct.unpack("f", sensor_read["pressure"])[0],2)
     iaq = struct.unpack("I", sensor_read["iaq"])[0]
     iaq_s = struct.unpack("I", sensor_read["iaq_s"])[0]
     co2_eq = struct.unpack("L", sensor_read["co2_eq"])[0]
-    b_voc_eq = struct.unpack("f", sensor_read["co2_eq"])[0]
-    comp_t = struct.unpack("f", sensor_read["co2_eq"])[0]
-    comp_h = struct.unpack("f", sensor_read["co2_eq"])[0]
-    comp_g = struct.unpack("f", sensor_read["co2_eq"])[0]
-    gas = struct.unpack("f", sensor_read["gas"])[0]
+    b_voc_eq = round(struct.unpack("f", sensor_read["b_voc_eq"])[0],4)
+    comp_t = round(struct.unpack("f", sensor_read["comp_t"])[0],2)
+    comp_h = round(struct.unpack("f", sensor_read["comp_h"])[0],2)
+    comp_g = struct.unpack("L", sensor_read["comp_g"])[0]
+    gas = round(struct.unpack("f", sensor_read["gas"])[0],2)
     accuracy = struct.unpack("H", sensor_read["accuracy"])[0]
 
-    str_to_write = f"{now},{temperature},{humidity},{pressure},{iaq},{iaq_s},{co2_eq},{b_voc_eq},{comp_t},{comp_h},{comp_g},{gas},{accuracy}\n"
+    str_to_write = f"{now},{temperature},{humidity},{pressure},{iaq},{iaq_s},{co2_eq},{b_voc_eq},{comp_t},{comp_h},{comp_g},{gas},{accuracy}\n".replace(",","\t")
 
     log_root.info(f"Packet received: {str_to_write}")
 
@@ -292,7 +292,7 @@ def clear_sensors():
 def main():
     # Header
     with open(filepath_out, "w") as fp:
-        fp.write("datetime," + ",".join(SENSOR_NAME_LIST[1:]) + "\n")
+        fp.write("datetime\t" + "\t".join(SENSOR_NAME_LIST[1:]) + "\n")
 
     while not end_loop:
         loop = asyncio.new_event_loop()
